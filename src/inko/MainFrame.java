@@ -16,6 +16,7 @@ import static inko.Document.*;
 import static inko.InkoType.*;
 import static inko.PatientField.*;
 import static inko.SignableDocument.*;
+import static inko.SignatureServer.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
@@ -37,7 +38,6 @@ import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.JTextComponent;
-import static util.Net.getLocalIpAddress;
 import static util.QRCodeGenerator.generateQRCodeImage;
 
 public class MainFrame extends JFrame {
@@ -1043,22 +1043,20 @@ public class MainFrame extends JFrame {
         setTypeUI();
         typeChangeActionPerformed();
 
-        if ( patient.hasSignatureData() ) {
-            if ( patient.getSignature(BERATUNG) != null && patient.getSignature(BERATUNG).getSign() != null ) {
-                BeratungsbogenButton.setBackground(GREEN);
-            } else {
-                BeratungsbogenButton.setBackground(RED);
-            }
-            if ( patient.getSignature(BINDUNG) != null && patient.getSignature(BINDUNG).getSign() != null ) {
-                BindungserklärungButton.setBackground(GREEN);
-            } else {
-                BindungserklärungButton.setBackground(RED);
-            }
-            if ( patient.getSignature(MEHRKOSTEN) != null && patient.getSignature(MEHRKOSTEN).getSign() != null ) {
-                MehrkostenerklärungButton.setBackground(GREEN);
-            } else {
-                MehrkostenerklärungButton.setBackground(RED);
-            }
+        if ( patient.getSignature(BERATUNG) != null && patient.getSignature(BERATUNG).getSign() != null ) {
+            BeratungsbogenButton.setBackground(GREEN);
+        } else {
+            BeratungsbogenButton.setBackground(RED);
+        }
+        if ( patient.getSignature(BINDUNG) != null && patient.getSignature(BINDUNG).getSign() != null ) {
+            BindungserklärungButton.setBackground(GREEN);
+        } else {
+            BindungserklärungButton.setBackground(RED);
+        }
+        if ( patient.getSignature(MEHRKOSTEN) != null && patient.getSignature(MEHRKOSTEN).getSign() != null ) {
+            MehrkostenerklärungButton.setBackground(GREEN);
+        } else {
+            MehrkostenerklärungButton.setBackground(RED);
         }
 
         refreshArtikelComboBox();
@@ -1506,11 +1504,11 @@ public class MainFrame extends JFrame {
     }//GEN-LAST:event_jUpButtonActionPerformed
 
     private void sign(int patientId, SignableDocument document) {
-        startServer();
+        startSignatureServer();
         showQRCode(patientId, document);
     }
 
-    private void startServer() {
+    private void startSignatureServer() {
         if (signServer == null) {
             signServer = new SignatureServer(this);
             try {
@@ -1524,8 +1522,9 @@ public class MainFrame extends JFrame {
 
     private void showQRCode(int patientId, SignableDocument document) {
         String localIp = getLocalIpAddress(IP_PATTERN);
-        String url = "http://" + localIp + ":" + SignatureServer.PORT +
-                     "/signature?patientId=" + patientId + "?document=" + document;
+        String url = "http://" + localIp + ":" + SignatureServer.PORT + "/signature" +
+                     "?" + PARAM1 + "=" + patientId +
+                     "&" + PARAM2 + "=" + document;
         System.out.println("Signatur-URL: " + url); // debug
         try {
             BufferedImage qrCodeImage = generateQRCodeImage(url, 300, 300);

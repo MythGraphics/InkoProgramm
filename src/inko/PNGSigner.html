@@ -100,7 +100,9 @@
                     alert("Unterschrift erfolgreich übertragen.");
                     signaturePad.clear();
                 } else {
-                    alert("Fehler bei der Übertragung.");
+                    response.text().then( errorMessage => {
+                        alert( response.status + " (" + response.statusText + "): " + "Übertragungsfehler: " + ( errorMessage || "Unbekannter Serverfehler" ));
+                    });
                 }
             })
             .catch( error => {

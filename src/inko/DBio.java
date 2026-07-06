@@ -468,12 +468,13 @@ public class DBio extends SQLConnection {
             if (sign == null) {
                 continue;
             }
-            String sql = "REPLACE INTO " + TABLE_SIGNATURE + " (" +
+            String col1 = sign.getDocumentType().getSignField().getDBName();
+            String col2 = sign.getDocumentType().getDateField().getDBName();
+            String sql = "INSERT INTO " + TABLE_SIGNATURE + " (" +
                          SignatureField.PATIENT_ID.getDBName() + ", " +
-                         sign.getDocumentType().getSignField().getDBName() + ", " +
-                         sign.getDocumentType().getDateField().getDBName() +
-                         ") VALUES (?, ?, ?)";
-           System.out.println(sql); // debug
+                         col1 + ", " + col2 + ") VALUES (?, ?, ?) " + " ON DUPLICATE KEY UPDATE " +
+                         col1 + " = " + "VALUES(" + col1 + "), " +
+                         col2 + " = " + "VALUES(" + col2 + ")";
 
            if ( sign.getSign() == null ) {
                try ( PreparedStatement pstmt = getConnection().prepareStatement( sql )) {

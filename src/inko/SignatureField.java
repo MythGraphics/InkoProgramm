@@ -16,7 +16,7 @@ import java.time.LocalDate;
 
 public enum SignatureField {
 
-    PATIENT_ID("p_id", "int unsigned not null", Integer.class, null),
+    PATIENT_ID("p_id", "int unsigned not null unique", Integer.class, null),
     SIGN_BERATUNG("UnterschriftBeratung", "mediumblob", BufferedImage.class, "⚕sign_beratung⚕"),
     DATE_BERATUNG("DatumBeratung", "date", LocalDate.class, "⚕date_beratung⚕"),
     SIGN_BINDUNG("UnterschriftBindung", "mediumblob", BufferedImage.class, "⚕sign_bindung⚕"),

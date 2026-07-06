@@ -16,18 +16,17 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.InetSocketAddress;
-import java.net.URI;
+import java.net.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import javax.imageio.ImageIO;
 import util.EnumHelper;
 
 public class SignatureServer {
 
     public final static int PORT = 8080;
+    public final static String PARAM1 = "patientId";
+    public final static String PARAM2 = "document";
 
     private final MainFrame mainFrame;
 
@@ -44,6 +43,49 @@ public class SignatureServer {
         try ( ByteArrayInputStream in = new ByteArrayInputStream( imageBytes )) {
             return ImageIO.read(in);
         }
+    }
+
+    public static String getLocalIpAddress(String pattern) {
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            String[] patternArray = { pattern, "192.168.", "10.", "172." };
+            for (String s : patternArray) {
+                String ip = filterHostAddress(interfaces, s);
+                if (ip != null) {
+                    return ip;
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        // Fallback, falls gar nichts gefunden wurde
+        return "127.0.0.1";
+    }
+
+    public static String filterHostAddress(Enumeration<NetworkInterface> interfaces, String pattern) throws SocketException {
+        if (pattern == null || pattern.length() <= 0) {
+            return null;
+        }
+
+        for ( NetworkInterface netInterface : Collections.list( interfaces )) {
+            // Ignoriere inaktive Schnittstellen, Loopbacks und virtuelle Docker/VM-Adapter
+            if ( !netInterface.isUp() || netInterface.isLoopback() || netInterface.isVirtual() ) {
+                continue;
+            }
+
+            Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+            for ( InetAddress addr : Collections.list( addresses )) {
+                // nur eine echte IPv4-Adresse
+                if ( addr instanceof Inet4Address && !addr.isLoopbackAddress() && !addr.isLinkLocalAddress() ) {
+                    String hostAddress = addr.getHostAddress();
+                    // filtern
+                    if ( hostAddress.startsWith( pattern )) {
+                        return hostAddress;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public Patient getPatient() {
@@ -112,9 +154,11 @@ public class SignatureServer {
             int patientId = 0;
             SignableDocument document = null;
             try {
-                patientId = Integer.parseInt( params.get( "patientId" ));
-                document = EnumHelper.getEnumFromString( SignableDocument.class, params.get( "document" ));
-            } catch (NumberFormatException | NullPointerException ignore) {}
+                patientId = Integer.parseInt( params.get( PARAM1 ));
+                document  = EnumHelper.getEnumFromString( SignableDocument.class, params.get( PARAM2 ));
+            } catch (NumberFormatException | NullPointerException e) {
+                System.err.println( "Fehler Signature-Server: " + e.getMessage() );
+            }
 
             if ( "GET".equalsIgnoreCase( method )) {
                 // HTML-Seite ausliefern

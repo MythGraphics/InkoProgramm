@@ -11,11 +11,13 @@ package inko;
  *
  */
 
+import static inko.ImageUtility.convertToHtmlBase64;
 import static inko.InkoType.SAUGEND;
 import static inko.PatientField.*;
 import static inko.SignableDocument.*;
 import static inko.SignatureField.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -576,8 +578,9 @@ public class Patient implements Comparable<Patient>, HasArtikel {
      * @param line Zeile
      * @param p Patient
      * @return Aufgelöster String
+     * @throws java.io.IOException IOException, if conversion BufferedImage to base64-string fails
      */
-    public static String replaceTemplate(String line, Patient p) {
+    public static String replaceTemplate(String line, Patient p) throws IOException {
         if ( line == null || !line.contains( "⚕" )) {
             return line;
         }
@@ -605,7 +608,7 @@ public class Patient implements Comparable<Patient>, HasArtikel {
     /**
      * Sucht basierend auf dem Tag im Patient- oder SignatureField-Enum nach dem Wert.
      */
-    private static String getReplacementForTag(String tag, Patient p) throws NoSuchElementException {
+    private static String getReplacementForTag(String tag, Patient p) throws NoSuchElementException, IOException {
         // Feld suchen, dessen Template-String "⚕" + tag + "⚕" entspricht.
         Enum field = TAG_MAP.get(tag);
         if (field != null) {
@@ -701,34 +704,37 @@ public class Patient implements Comparable<Patient>, HasArtikel {
             return;
         }
         switch (field) {
-            case ID:                        id                          = Integer.parseInt(value);                  break;
-            case LAST_NAME:                 lastName                    = value;                                    break;
-            case FIRST_NAME:                firstName                   = value;                                    break;
-            case STREET:                    street                      = value;                                    break;
-            case POSTCODE:                  postCode                    = Integer.valueOf(value);                   break;
-            case CITY:                      city                        = value;                                    break;
-            case BIRTHDATE:                 birthDate                   = LocalDate.parse(value);                   break;
-            case HEALTH_INSURENCE_IK:       healthInsurenceIK           = Integer.valueOf(value);                   break;
-            case HEALTH_INSURENCE_NUMBER:   insurenceNumber             = value;                                    break;
-            case PHONE:                     phoneNumber                 = value;                                    break;
-            case COMMENT:                   comment                     = value;                                    break;
-            case RX_DATE:                   prescriptionDate            = LocalDate.parse(value);                   break;
-            case FIRST_SUPPLY_DATE:         firstSupplyDate             = LocalDate.parse(value);                   break;
-            case END_OF_LICENCE_DATE:       prescriptionExpiringDate    = LocalDate.parse(value);                   break;
-            case END_OF_BINDING_DATE:       bindingExpiringDate         = LocalDate.parse(value);                   break;
-            case DELIVER:                   deliver                     = Boolean.parseBoolean(value);              break;
-            case PAUSE:                     paused                      = Boolean.parseBoolean(value);              break;
-            case BEFREIUNGSDATUM:           coPaymentFreeUntil          = LocalDate.parse(value);                   break;
-            case TYP:                       type                        = InkoType.fromCode( value.charAt( 0 ));    break;
-            case MENGENLISTE:               setMengenList(value);                                                   break;
-            case ARTIKELLISTE:              setArtikelIdList(value);                                                break;
+            case ID:                        id                          = Integer.parseInt(value);               break;
+            case LAST_NAME:                 lastName                    = value;                                 break;
+            case FIRST_NAME:                firstName                   = value;                                 break;
+            case STREET:                    street                      = value;                                 break;
+            case POSTCODE:                  postCode                    = Integer.valueOf(value);                break;
+            case CITY:                      city                        = value;                                 break;
+            case BIRTHDATE:                 birthDate                   = LocalDate.parse(value);                break;
+            case HEALTH_INSURENCE_IK:       healthInsurenceIK           = Integer.valueOf(value);                break;
+            case HEALTH_INSURENCE_NUMBER:   insurenceNumber             = value;                                 break;
+            case PHONE:                     phoneNumber                 = value;                                 break;
+            case COMMENT:                   comment                     = value;                                 break;
+            case RX_DATE:                   prescriptionDate            = LocalDate.parse(value);                break;
+            case FIRST_SUPPLY_DATE:         firstSupplyDate             = LocalDate.parse(value);                break;
+            case END_OF_LICENCE_DATE:       prescriptionExpiringDate    = LocalDate.parse(value);                break;
+            case END_OF_BINDING_DATE:       bindingExpiringDate         = LocalDate.parse(value);                break;
+            case DELIVER:                   deliver                     = Boolean.parseBoolean(value);           break;
+            case PAUSE:                     paused                      = Boolean.parseBoolean(value);           break;
+            case BEFREIUNGSDATUM:           coPaymentFreeUntil          = LocalDate.parse(value);                break;
+            case TYP:                       type                        = InkoType.fromCode( value.charAt( 0 )); break;
+            case MENGENLISTE:               setMengenList(value);                                                break;
+            case ARTIKELLISTE:              setArtikelIdList(value);                                             break;
             default: throw new NoSuchElementException("Feld \"" + field + "\" unbekannt.");
         }
         setModified(true);
     }
 
-    public String getFormattedValue(Enum field) throws NoSuchElementException {
+    public String getFormattedValue(Enum field) throws NoSuchElementException, IOException {
         Object obj = get(field);
+        if (obj == null) {
+            throw new NoSuchElementException("getFormattedValue: get(field) ist null.");
+        }
         if (field instanceof PatientField) {
             switch ((PatientField) field) {
                 case BEFREIUNGSDATUM:
@@ -739,10 +745,16 @@ public class Patient implements Comparable<Patient>, HasArtikel {
                     }
             }
         }
+        if (obj instanceof String) {
+            return (String) obj;
+        }
         if (obj instanceof LocalDate) {
             return ((ChronoLocalDate) obj).format(DEFAULT_FORMATTER);
         }
-        return getValue(field);
+        if (obj instanceof BufferedImage) {
+            return convertToHtmlBase64((BufferedImage) obj);
+        }
+        return obj.toString();
     }
 
     public String getValue(Enum field) throws NoSuchElementException {

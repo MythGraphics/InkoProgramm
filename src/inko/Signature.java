@@ -11,7 +11,10 @@ package inko;
  *
  */
 
+import static inko.ImageUtility.convertToBase64String;
+import static inko.ImageUtility.convertToHtmlBase64;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 
@@ -47,6 +50,14 @@ public class Signature {
         return sign;
     }
 
+    public String getBase64HtmlSign() throws IOException {
+        return convertToHtmlBase64(sign);
+    }
+
+    public String getBase64Sign() throws IOException {
+        return convertToBase64String(sign);
+    }
+
     public void setSign(BufferedImage sign) {
         this.sign = sign;
         modified = true;
@@ -78,6 +89,19 @@ public class Signature {
 
     public boolean isModified() {
         return modified;
+    }
+
+    @Override
+    public String toString() {
+        String imgString;
+        try {
+            imgString = getBase64Sign();
+        } catch (IOException e) {
+            imgString = e.getMessage();
+        }
+        return documentType + ": " + date + "\n" +
+               "Unterschrift (Base64): " + imgString + "\n" +
+               "modified: " + modified;
     }
 
 }

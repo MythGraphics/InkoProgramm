@@ -7,6 +7,7 @@ package inko;
  *
  */
 
+import static inko.ImageUtility.convertBytesToImage;
 import static inko.PatientField.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -413,7 +414,7 @@ public class DBio extends SQLConnection {
               ResultSet rs = pstmt.executeQuery();
             ) {
             if ( rs.next() ) {
-                return SignatureServer.convertBytesToImage( rs.getBytes( SQL_APP_FIELD[2] ));
+                return convertBytesToImage( rs.getBytes( SQL_APP_FIELD[2] ));
             }
         } catch (SQLException e) {
             exHandling(e);
@@ -425,7 +426,7 @@ public class DBio extends SQLConnection {
 
     public Map<SignableDocument, Signature> getSignatureMap(Patient p) {
         Map<SignableDocument, Signature> map = new HashMap<>();
-        String sql = "SELECT * FROM " + TABLE_SIGNATURE + " WHERE p_id = ?";
+        String sql = "SELECT * FROM " + TABLE_SIGNATURE + " WHERE " + SignatureField.PATIENT_ID.getDBName() + " = ?";
         try ( PreparedStatement pstmt = getConnection().prepareStatement( sql )) {
             SignableDocument type;
             BufferedImage img;
@@ -434,21 +435,22 @@ public class DBio extends SQLConnection {
             try ( ResultSet rs = pstmt.executeQuery() ) {
                 if ( rs.next() ) {
                     type = SignableDocument.values()[0];
-                    img  = SignatureServer.convertBytesToImage( rs.getBytes( 2 ));
+                    img  = convertBytesToImage( rs.getBytes( 2 ));
                     date = rs.getDate(3);
                     map.put( type, new Signature( type, img, date ));
 
                     type = SignableDocument.values()[1];
-                    img  = SignatureServer.convertBytesToImage( rs.getBytes( 4 ));
+                    img  = convertBytesToImage( rs.getBytes( 4 ));
                     date = rs.getDate(5);
                     map.put( type, new Signature( type, img, date ));
 
                     type = SignableDocument.values()[2];
-                    img  = SignatureServer.convertBytesToImage( rs.getBytes( 6 ));
+                    img  = convertBytesToImage( rs.getBytes( 6 ));
                     date = rs.getDate(7);
                     map.put( type, new Signature( type, img, date ));
                 }
             }
+            System.out.println(map); // debug
         } catch (SQLException e) {
             exHandling(e);
         } catch (IOException e) {

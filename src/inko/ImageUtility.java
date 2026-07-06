@@ -2,12 +2,12 @@
  *
  */
 
-package graphic.io;
+package inko;
 
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 1.0.2
  *
  */
 
@@ -16,7 +16,9 @@ import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
@@ -24,7 +26,28 @@ public class ImageUtility {
 
     private ImageUtility() {}
 
+    public static String convertToHtmlBase64(BufferedImage img) throws IOException {
+        // das fertige Präfix für das HTML-src-Attribut mitschicken
+        return "data:image/png;base64," + convertToBase64String(img);
+    }
+
+    public static String convertToBase64String(BufferedImage img) throws IOException {
+        byte[] imageBytes = convertImageToPngBytes(img);
+        return Base64.getEncoder().encodeToString(imageBytes); // Bytes in einen Base64-String codieren
+    }
+
+    public static byte[] convertImageToPngBytes(BufferedImage img) throws IOException {
+        try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
+            // BufferedImage in komprimierte PNG-Bytes wandeln
+            ImageIO.write(img, "png", out);
+            return out.toByteArray();
+        }
+    }
+
     public static BufferedImage convertBytesToImage(byte[] imageBytes) throws IOException {
+        if (imageBytes == null || imageBytes.length == 0) {
+            return null;
+        }
         try ( ByteArrayInputStream in = new ByteArrayInputStream( imageBytes )) {
             return ImageIO.read(in);
         }

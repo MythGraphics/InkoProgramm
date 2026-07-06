@@ -1183,13 +1183,13 @@ public class MainFrame extends JFrame {
                     htmlmaker.makeFrontpage( patientTableModel.getPatient() );
                     break;
                 case BERATUNGSBOGEN:
-                    htmlmaker.makeSignableDocument( patientTableModel.getPatient(), BERATUNG );
+                    htmlmaker.makeSignedDocument( patientTableModel.getPatient(), BERATUNG );
                     break;
                 case BINDUNGSERKLÄRUNG:
-                    htmlmaker.makeSignableDocument( patientTableModel.getPatient(), BINDUNG );
+                    htmlmaker.makeSignedDocument( patientTableModel.getPatient(), BINDUNG );
                     break;
                 case MEHRKOSTENERKLÄRUNG:
-                    htmlmaker.makeSignableDocument( patientTableModel.getPatient(), MEHRKOSTEN );
+                    htmlmaker.makeSignedDocument( patientTableModel.getPatient(), MEHRKOSTEN );
                     break;
                 case LIEFERLISTE:
                     htmlmaker.makeDeliveryList( patientComboBoxModel.getList() );

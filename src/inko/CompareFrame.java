@@ -7,7 +7,7 @@ package inko;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 2.0.0
+ * @version 2.0.1
  *
  */
 
@@ -447,7 +447,9 @@ public class CompareFrame extends javax.swing.JFrame {
 
     private void mapTableData(Patient patient, int tableColumn) {
         for (int i = 0; i < ADG_FIELDS.size(); ++i) {
-            table.setValueAt( patient.getFormattedValue( ADG_FIELDS.get( i )), i, tableColumn);
+            try {
+                table.setValueAt( patient.getFormattedValue( ADG_FIELDS.get( i )), i, tableColumn);
+            } catch (IOException ignore) { /* betrifft nur Signatur-Daten */ }
             coloringTable(i);
         }
     }

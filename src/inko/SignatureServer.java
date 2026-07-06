@@ -14,12 +14,12 @@ package inko;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import static inko.ImageUtility.convertBytesToImage;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.*;
-import javax.imageio.ImageIO;
 import util.EnumHelper;
 
 public class SignatureServer {
@@ -34,15 +34,6 @@ public class SignatureServer {
 
     public SignatureServer(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-    }
-
-    public static BufferedImage convertBytesToImage(byte[] imageBytes) throws IOException {
-        if (imageBytes == null || imageBytes.length == 0) {
-            return null;
-        }
-        try ( ByteArrayInputStream in = new ByteArrayInputStream( imageBytes )) {
-            return ImageIO.read(in);
-        }
     }
 
     public static String getLocalIpAddress(String pattern) {

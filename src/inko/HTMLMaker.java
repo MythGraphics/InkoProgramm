@@ -107,7 +107,7 @@ public class HTMLMaker {
         makeHtmlFile( target, sb.toString() );
     }
 
-    public void makeSignableDocument(Patient p, SignableDocument document) throws IOException {
+    public void makeSignedDocument(Patient p, SignableDocument document) throws IOException {
         StringBuilder sb = new StringBuilder();
         try ( BufferedReader in = getTextReader( template )) {
             while ( in.ready() ) {

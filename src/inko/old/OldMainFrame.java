@@ -123,7 +123,7 @@ public class OldMainFrame extends inko.MainFrame {
                     break;
                 case BERATUNGSBOGEN:
                     Patient p2 = Patient.fromPatient( patientTableModel.getPatient(), patientArtikelListModel );
-                    htmlmaker.makeSignableDocument(p2, BERATUNG);
+                    htmlmaker.makeSignedDocument(p2, BERATUNG);
                     break;
                 case LIEFERLISTE:
                     List<Patient> lieferList = ((inko.old.DBio) pio).getOldPatientList();

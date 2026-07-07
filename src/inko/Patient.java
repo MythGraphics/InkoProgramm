@@ -19,7 +19,6 @@ import static inko.SignatureField.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDate;
@@ -522,58 +521,6 @@ public class Patient implements Comparable<Patient>, HasArtikel {
     }
 
     /**
-     * Erzeugt ein Patient-Objekt direkt aus einem ResultSet.
-     * @param rs ResultSet
-     * @return Datenbank-Eintrag als neues Patient-Objekt
-     * @throws SQLException
-     */
-    public static Patient fromResultSet(ResultSet rs) throws SQLException {
-        Patient p = new Patient();
-
-        // Basisfelder
-        p.set( ID,                                  rs.getInt(      ID.getDBName()                      ));
-        p.set( LAST_NAME,                           rs.getString(   LAST_NAME.getDBName()               ));
-        p.set( FIRST_NAME,                          rs.getString(   FIRST_NAME.getDBName()              ));
-        p.set( STREET,                              rs.getString(   STREET.getDBName()                  ));
-        p.set( POSTCODE,                            rs.getInt(      POSTCODE.getDBName()                ));
-        p.set( CITY,                                rs.getString(   CITY.getDBName()                    ));
-
-        // Datumsfelder mit Konvertierung von SQL-Date zu LocalDate
-        p.set( BIRTHDATE,           toLocalDate(    rs.getDate(     BIRTHDATE.getDBName()               )));
-        p.set( RX_DATE,             toLocalDate(    rs.getDate(     RX_DATE.getDBName()                 )));
-        p.set( FIRST_SUPPLY_DATE,   toLocalDate(    rs.getDate(     FIRST_SUPPLY_DATE.getDBName()       )));
-        p.set( END_OF_LICENCE_DATE, toLocalDate(    rs.getDate(     END_OF_LICENCE_DATE.getDBName()     )));
-        p.set( END_OF_BINDING_DATE, toLocalDate(    rs.getDate(     END_OF_BINDING_DATE.getDBName()     )));
-        p.set( BEFREIUNGSDATUM,     toLocalDate(    rs.getDate(     BEFREIUNGSDATUM.getDBName()         )));
-
-        // Sonstige Felder
-        p.set( HEALTH_INSURENCE_IK,                 rs.getInt(      HEALTH_INSURENCE_IK.getDBName()     ));
-        p.set( HEALTH_INSURENCE_NUMBER,             rs.getString(   HEALTH_INSURENCE_NUMBER.getDBName() ));
-        p.set( PHONE,                               rs.getString(   PHONE.getDBName()                   ));
-        p.setComment(                               rs.getString(   COMMENT.getDBName()                 ));
-        p.set( DELIVER,                             rs.getBoolean(  DELIVER.getDBName()                 ));
-        p.set( PAUSE,                               rs.getBoolean(  PAUSE.getDBName()                   ));
-
-        // Artikel-Listen als Row-Daten
-        p.setArtikelIdList(                         rs.getString(   ARTIKELLISTE.getDBName()            ));
-        p.setMengenList(                            rs.getString(   MENGENLISTE.getDBName()             ));
-
-        String typeCode =                           rs.getString(   TYP.getDBName()                     );
-        if ( typeCode != null && !typeCode.isEmpty() ) {
-            p.setType( InkoType.fromCode( typeCode.charAt(0) ));
-        }
-
-        // DB-Instanz MUSS buildArtikelList aufrufen!
-
-        p.setModified(false);
-        return p;
-    }
-
-    private static LocalDate toLocalDate(java.sql.Date sqlDate) {
-        return (sqlDate != null) ? sqlDate.toLocalDate() : DEFAULT_DATE;
-    }
-
-    /**
      * Ersetzt alle Platzhalter in einem einzelnen String.
      * @param line Zeile
      * @param p Patient
@@ -733,7 +680,7 @@ public class Patient implements Comparable<Patient>, HasArtikel {
     public String getFormattedValue(Enum field) throws NoSuchElementException, IOException {
         Object obj = get(field);
         if (obj == null) {
-            throw new NoSuchElementException("getFormattedValue: get(field) ist null.");
+            throw new NoSuchElementException("getFormattedValue: get(Enum field) liefert null.");
         }
         if (field instanceof PatientField) {
             switch ((PatientField) field) {

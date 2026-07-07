@@ -50,12 +50,26 @@ public class Signature {
         return sign;
     }
 
-    public String getBase64HtmlSign() throws IOException {
-        return convertToHtmlBase64(sign);
+    public String getBase64HtmlSign() {
+        if (sign == null) {
+            return "NULL";
+        }
+        try {
+            return convertToHtmlBase64(sign);
+        } catch (IOException e) {
+            return e.getMessage();
+        }
     }
 
-    public String getBase64Sign() throws IOException {
-        return convertToBase64String(sign);
+    public String getBase64Sign() {
+        if (sign == null) {
+            return "NULL";
+        }
+        try {
+            return convertToBase64String(sign);
+        } catch (IOException e) {
+            return e.getMessage();
+        }
     }
 
     public void setSign(BufferedImage sign) {
@@ -93,14 +107,8 @@ public class Signature {
 
     @Override
     public String toString() {
-        String imgString;
-        try {
-            imgString = getBase64Sign();
-        } catch (IOException e) {
-            imgString = e.getMessage();
-        }
-        return documentType + ": " + date + "\n" +
-               "Unterschrift (Base64): " + imgString + "\n" +
+        return documentType + ": " + getDate() + "\n" +
+               "Unterschrift (Base64): " + getBase64Sign() + "\n" +
                "modified: " + modified;
     }
 

@@ -126,7 +126,7 @@ public class DBio extends SQLConnection {
     }
 
     private Artikel loadArtikel(ResultSet rs) throws SQLException {
-        Artikel himi = new Artikel();
+        Artikel artikel = new Artikel();
         for ( ArtikelField field : ArtikelField.values() ) {
             String colName = field.getDBName();
             // prüfen, ob die Spalte überhaupt im ResultSet vorhanden ist
@@ -134,9 +134,9 @@ public class DBio extends SQLConnection {
             if (value == null) {
                 continue; // Feld bleibt beim Default-Wert
             }
-            himi.set(field, value);
+            artikel.set(field, value);
         }
-        return himi;
+        return artikel;
     }
 
     public int updateArtikel(Artikel artikel) {
@@ -212,8 +212,8 @@ public class DBio extends SQLConnection {
             }
         }
         p.setId( rs.getInt( ID.getDBName() ));
+        p.buildArtikelList( loadArtikel() );
         p.setSignatureMap( getSignatureMap( p ));
-        p.buildArtikelList(artikelCache);
         p.setModified(false);
         return p;
     }
@@ -248,11 +248,11 @@ public class DBio extends SQLConnection {
         return 0;
     }
 
-    private void loadArtikel(Patient p) throws SQLException {
+    private List<Artikel> loadArtikel() throws SQLException {
         if ( artikelCache == null ) {
             artikelCache = getArtikelList();
         }
-        p.buildArtikelList(artikelCache);
+        return artikelCache;
     }
 
     public void deleteArtikelCache() {
@@ -294,8 +294,7 @@ public class DBio extends SQLConnection {
                 return list;
             }
             while ( rs.next() ) {
-                Patient p = Patient.fromResultSet(rs);
-                loadArtikel(p);
+                Patient p = loadPatient(rs);
                 list.add(p);
             }
         } catch (SQLException e) {
@@ -428,29 +427,32 @@ public class DBio extends SQLConnection {
         Map<SignableDocument, Signature> map = new HashMap<>();
         String sql = "SELECT * FROM " + TABLE_SIGNATURE + " WHERE " + SignatureField.PATIENT_ID.getDBName() + " = ?";
         try ( PreparedStatement pstmt = getConnection().prepareStatement( sql )) {
-            SignableDocument type;
-            BufferedImage img;
-            Date date;
             pstmt.setInt( 1, p.getId() );
             try ( ResultSet rs = pstmt.executeQuery() ) {
                 if ( rs.next() ) {
-                    type = SignableDocument.values()[0];
-                    img  = convertBytesToImage( rs.getBytes( 2 ));
-                    date = rs.getDate(3);
-                    map.put( type, new Signature( type, img, date ));
-
-                    type = SignableDocument.values()[1];
-                    img  = convertBytesToImage( rs.getBytes( 4 ));
-                    date = rs.getDate(5);
-                    map.put( type, new Signature( type, img, date ));
-
-                    type = SignableDocument.values()[2];
-                    img  = convertBytesToImage( rs.getBytes( 6 ));
-                    date = rs.getDate(7);
-                    map.put( type, new Signature( type, img, date ));
+                    for ( SignableDocument type : SignableDocument.values() ) {
+                        String signColumn = type.getSignField().getDBName();
+                        String dateColumn = type.getDateField().getDBName();
+                        byte[] imageBytes = rs.getBytes(signColumn);
+                        if (imageBytes != null) {
+                            BufferedImage sign = convertBytesToImage(imageBytes);
+                            Date date = rs.getDate(dateColumn);
+                            map.put( type, new Signature( type, sign, date ));
+                        }
+                    }
+/*
+                    for (int i = 0; i < 3; ++i) {
+                        SignableDocument type = SignableDocument.values()[i];
+                        byte[] imgBytes       = rs.getBytes(i*2+2);
+                        Date date             = rs.getDate(i*2+3);
+                        if (imgBytes != null) {
+                            BufferedImage img = convertBytesToImage(imgBytes);
+                            map.put( type, new Signature( type, img, date ));
+                        }
+                    }
+ */
                 }
             }
-            System.out.println(map); // debug
         } catch (SQLException e) {
             exHandling(e);
         } catch (IOException e) {

@@ -17,23 +17,26 @@ import java.time.LocalDate;
 public enum SignatureField {
 
     PATIENT_ID("p_id", "int unsigned not null unique", Integer.class, null),
-    SIGN_BERATUNG("UnterschriftBeratung", "mediumblob", BufferedImage.class, "⚕sign_beratung⚕"),
-    DATE_BERATUNG("DatumBeratung", "date", LocalDate.class, "⚕date_beratung⚕"),
-    SIGN_BINDUNG("UnterschriftBindung", "mediumblob", BufferedImage.class, "⚕sign_bindung⚕"),
-    DATE_BINDUNG("DatumBindung", "date", LocalDate.class, "⚕date_bindung⚕"),
-    SIGN_MEHRKOSTEN("UnterschriftMehrkosten", "mediumblob", BufferedImage.class, "⚕sign_mehrkosten⚕"),
-    DATE_MEHRKOSTEN("DatumMehrkosten", "date", LocalDate.class, "⚕date_mehrkosten⚕");
+    SIGN_BERATUNG("BERATUNG_Unterschrift", "mediumblob", BufferedImage.class, "⚕sign_beratung⚕"),
+    DATE_BERATUNG("BERATUNG_Datum", "date", LocalDate.class, "⚕date_beratung⚕"),
+    SIGN_BINDUNG("BINDUNG_Unterschrift", "mediumblob", BufferedImage.class, "⚕sign_bindung⚕"),
+    DATE_BINDUNG("BINDUNG_Datum", "date", LocalDate.class, "⚕date_bindung⚕"),
+    SIGN_MEHRKOSTEN("MEHRKOSTEN_Unterschrift", "mediumblob", BufferedImage.class, "⚕sign_mehrkosten⚕"),
+    DATE_MEHRKOSTEN("MEHRKOSTEN_Datum", "date", LocalDate.class, "⚕date_mehrkosten⚕");
+
+    public final static String SIGN_STRING = "Unterschrift";
+    public final static String DATE_STRING = "Datum";
 
     private final String dbName;
     private final String dbType;
-    private final Class<?> type;
+    private final Class<?> dataType;
     private final String template;
 
-    SignatureField(String dbName, String dbType, Class<?> type, String template) {
-        this.dbName = dbName;
-        this.dbType = dbType;
-        this.type = type;
-        this.template = template;
+    SignatureField(String dbName, String dbType, Class<?> dataType, String template) {
+        this.dbName     = dbName;
+        this.dbType     = dbType;
+        this.dataType   = dataType;
+        this.template   = template;
     }
 
     public String getDBName() {
@@ -45,7 +48,7 @@ public enum SignatureField {
     }
 
     public Class<?> getType() {
-        return type;
+        return dataType;
     }
 
     public String getTemplate() {

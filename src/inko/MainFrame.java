@@ -1022,7 +1022,7 @@ public class MainFrame extends JFrame {
     }
 
     private String getSignDateString(SignableDocument doc, String defaultString) {
-        if ( !getCurrentPatient().hasSignatureData() ) {
+        if ( getCurrentPatient() == null || !getCurrentPatient().hasSignatureData() ) {
             return defaultString;
         }
 
@@ -1030,7 +1030,7 @@ public class MainFrame extends JFrame {
         if (sign == null) {
             return defaultString;
         }
-        
+
         return "Unterschrift vom " + sign.getDate().format(Patient.DEFAULT_FORMATTER);
     }
 

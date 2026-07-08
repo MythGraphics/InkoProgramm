@@ -80,14 +80,15 @@ public class SignatureServer {
     }
 
     public Patient getPatient() {
-        return mainFrame.patientTableModel.getPatient();
+        return mainFrame.getCurrentPatient();
     }
 
     private Patient getPatientById(int id) {
+//      return mainFrame.getDBio().getPatientById(id); // lädt Patienten aus der DB
         return mainFrame.getPatients().get(id);
     }
 
-    private void refreshUI(Patient patient) {
+    private void refreshUI(Signature signature, Patient patient) {
         /* Da der HttpServer in einem Hintergrundthread läuft,
          * musst du GUI-Updates in Swing über den EventQueue/EDT jagen:
          * java.awt.EventQueue.invokeLater(() -> { meinLabel.repaint(); });
@@ -186,8 +187,9 @@ public class SignatureServer {
                     BufferedImage signImage = convertBytesToImage(imageBytes);
                     Patient patient = getPatient();
                     if (patient != null) {
-                        patient.setSignature( new Signature( document, signImage ));
-                        refreshUI(patient);
+                        Signature sign = new Signature(document, signImage);
+                        patient.setSignature(sign);
+                        refreshUI(sign, patient);
                         sendResponse(exchange, 200, "OK");
                     } else {
                         sendResponse(exchange, 404, "Patient nicht gefunden / geladen.");

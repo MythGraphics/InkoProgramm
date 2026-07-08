@@ -795,19 +795,23 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deckblattButtonActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="BeratungsbogenButton">
+            <Component class="javax.swing.JButton" name="BeratungsprotokollButton">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Beratungsbogen"/>
-                <Property name="toolTipText" type="java.lang.String" value="Beratungsbogen erzeugen"/>
+                <Property name="text" type="java.lang.String" value="Beratungsprotokoll"/>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="getSignDateString(BERATUNG,&quot;Beratungsprotokoll erzeugen&quot;)" type="code"/>
+                </Property>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="BeratungsbogenButtonActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="BeratungsprotokollButtonActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JButton" name="Bindungserkl&#xe4;rungButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Bindungserkl&#xe4;rung"/>
-                <Property name="toolTipText" type="java.lang.String" value="Bindungserkl&#xe4;rung erzeugen"/>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="getSignDateString(BINDUNG,&quot;Bindungserkl&#xe4;rung erzeugen&quot;)" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="Bindungserkl&#xe4;rungButtonActionPerformed"/>
@@ -816,7 +820,9 @@
             <Component class="javax.swing.JButton" name="Mehrkostenerkl&#xe4;rungButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Erkl&#xe4;rung zu Mehrkosten"/>
-                <Property name="toolTipText" type="java.lang.String" value="Mehrkostenerkl&#xe4;rung erzeugen"/>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="getSignDateString(MEHRKOSTEN,&quot;Mehrkostenerkl&#xe4;rung erzeugen&quot;)" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="Mehrkostenerkl&#xe4;rungButtonActionPerformed"/>
@@ -1003,6 +1009,9 @@
             <Component class="javax.swing.JButton" name="jButtonSignBeratung">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Beratungsbogen"/>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="getSignDateString(BERATUNG,null)" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSignBeratungActionPerformed"/>
@@ -1011,6 +1020,9 @@
             <Component class="javax.swing.JButton" name="jButtonSignBindung">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Bindungserkl&#xe4;rung"/>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="getSignDateString(BINDUNG,null)" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSignBindungActionPerformed"/>
@@ -1019,6 +1031,9 @@
             <Component class="javax.swing.JButton" name="jButtonSignMehrkosten">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Erkl&#xe4;rung zu Mehrkosten"/>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="getSignDateString(MEHRKOSTEN,null)" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSignMehrkostenActionPerformed"/>

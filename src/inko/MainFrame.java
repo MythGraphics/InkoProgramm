@@ -45,8 +45,9 @@ public class MainFrame extends JFrame {
     public final static String NAME     = "MythGraphics InkoProgramm";
     public final static String VERSION  = "6.0.0";
     public final static DateFormat DF   = new SimpleDateFormat("dd.MM.yyyy");
-    public final static Color RED       = new Color(255,102,102);
-    public final static Color GREEN     = new Color(51,255,51);
+    public final static Color RED       = new Color(255, 102, 102);
+    public final static Color GREEN     = new Color( 51, 255,  51);
+    public final static Color YELLOW    = new Color(250, 250,  51);
 
     public static String SEVENZIP       = "C:\\Program Files\\7-Zip\\7z.exe";
     public static String OO             = "P:\\OpenOffice 4\\program\\soffice.exe";
@@ -152,7 +153,7 @@ public class MainFrame extends JFrame {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         deckblattButton = new javax.swing.JButton();
-        BeratungsbogenButton = new javax.swing.JButton();
+        BeratungsprotokollButton = new javax.swing.JButton();
         BindungserklärungButton = new javax.swing.JButton();
         MehrkostenerklärungButton = new javax.swing.JButton();
         etikettenButton = new javax.swing.JButton();
@@ -533,17 +534,17 @@ public class MainFrame extends JFrame {
         });
         jPanel1.add(deckblattButton);
 
-        BeratungsbogenButton.setText("Beratungsbogen");
-        BeratungsbogenButton.setToolTipText("Beratungsbogen erzeugen");
-        BeratungsbogenButton.addActionListener(new java.awt.event.ActionListener() {
+        BeratungsprotokollButton.setText("Beratungsprotokoll");
+        BeratungsprotokollButton.setToolTipText(getSignDateString(BERATUNG,"Beratungsprotokoll erzeugen"));
+        BeratungsprotokollButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BeratungsbogenButtonActionPerformed(evt);
+                BeratungsprotokollButtonActionPerformed(evt);
             }
         });
-        jPanel1.add(BeratungsbogenButton);
+        jPanel1.add(BeratungsprotokollButton);
 
         BindungserklärungButton.setText("Bindungserklärung");
-        BindungserklärungButton.setToolTipText("Bindungserklärung erzeugen");
+        BindungserklärungButton.setToolTipText(getSignDateString(BINDUNG,"Bindungserklärung erzeugen"));
         BindungserklärungButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BindungserklärungButtonActionPerformed(evt);
@@ -552,7 +553,7 @@ public class MainFrame extends JFrame {
         jPanel1.add(BindungserklärungButton);
 
         MehrkostenerklärungButton.setText("Erklärung zu Mehrkosten");
-        MehrkostenerklärungButton.setToolTipText("Mehrkostenerklärung erzeugen");
+        MehrkostenerklärungButton.setToolTipText(getSignDateString(MEHRKOSTEN,"Mehrkostenerklärung erzeugen"));
         MehrkostenerklärungButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MehrkostenerklärungButtonActionPerformed(evt);
@@ -681,6 +682,7 @@ public class MainFrame extends JFrame {
         jPanel4.setLayout(new java.awt.GridLayout(1, 0));
 
         jButtonSignBeratung.setText("Beratungsbogen");
+        jButtonSignBeratung.setToolTipText(getSignDateString(BERATUNG,null));
         jButtonSignBeratung.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSignBeratungActionPerformed(evt);
@@ -689,6 +691,7 @@ public class MainFrame extends JFrame {
         jPanel4.add(jButtonSignBeratung);
 
         jButtonSignBindung.setText("Bindungserklärung");
+        jButtonSignBindung.setToolTipText(getSignDateString(BINDUNG,null));
         jButtonSignBindung.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSignBindungActionPerformed(evt);
@@ -697,6 +700,7 @@ public class MainFrame extends JFrame {
         jPanel4.add(jButtonSignBindung);
 
         jButtonSignMehrkosten.setText("Erklärung zu Mehrkosten");
+        jButtonSignMehrkosten.setToolTipText(getSignDateString(MEHRKOSTEN,null));
         jButtonSignMehrkosten.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSignMehrkostenActionPerformed(evt);
@@ -987,6 +991,7 @@ public class MainFrame extends JFrame {
                 System.out.println("Starte Update der Datenbank ...");
                 DBio.updateDB(user, pass, server);
                 System.out.println("... abgeschlossen.");
+                return;
             }
             else if ( args[i].startsWith( "--info" )) {
                 InfoFrame.main( new String[]{server} );
@@ -1011,6 +1016,18 @@ public class MainFrame extends JFrame {
     private void etikettenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_etikettenButtonActionPerformed
         processTemplate("Adressetiketten.odt");
     }//GEN-LAST:event_etikettenButtonActionPerformed
+
+    public Patient getCurrentPatient() {
+        return patientTableModel.getPatient();
+    }
+
+    private String getSignDateString(SignableDocument doc, String defaultString) {
+        Signature sign = getCurrentPatient().getSignature(doc);
+        if (sign != null) {
+            return "Unterschrift vom " + sign.getDate().format(Patient.DEFAULT_FORMATTER);
+        }
+        return defaultString;
+    }
 
     protected void loadEntry(Patient patient) {
         if (patient == null) {
@@ -1044,9 +1061,9 @@ public class MainFrame extends JFrame {
         typeChangeActionPerformed();
 
         if ( patient.getSignature(BERATUNG) != null && patient.getSignature(BERATUNG).getSign() != null ) {
-            BeratungsbogenButton.setBackground(GREEN);
+            BeratungsprotokollButton.setBackground(GREEN);
         } else {
-            BeratungsbogenButton.setBackground(RED);
+            BeratungsprotokollButton.setBackground(RED);
         }
         if ( patient.getSignature(BINDUNG) != null && patient.getSignature(BINDUNG).getSign() != null ) {
             BindungserklärungButton.setBackground(GREEN);
@@ -1116,9 +1133,9 @@ public class MainFrame extends JFrame {
         }
     }
 
-    private void BeratungsbogenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BeratungsbogenButtonActionPerformed
+    private void BeratungsprotokollButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BeratungsprotokollButtonActionPerformed
         makeHtml(evt, BERATUNGSBOGEN);
-    }//GEN-LAST:event_BeratungsbogenButtonActionPerformed
+    }//GEN-LAST:event_BeratungsprotokollButtonActionPerformed
 
     private void BindungserklärungButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BindungserklärungButtonActionPerformed
         makeHtml(evt, BINDUNGSERKLÄRUNG);
@@ -1398,7 +1415,7 @@ public class MainFrame extends JFrame {
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        BeratungsbogenButtonActionPerformed(null);
+        BeratungsprotokollButtonActionPerformed(null);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
@@ -1863,7 +1880,7 @@ public class MainFrame extends JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BeratungsbogenButton;
+    private javax.swing.JButton BeratungsprotokollButton;
     private javax.swing.JButton BindungserklärungButton;
     private javax.swing.JButton MehrkostenerklärungButton;
     private javax.swing.JRadioButton aRadioButton;

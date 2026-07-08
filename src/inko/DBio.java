@@ -472,8 +472,8 @@ public class DBio extends SQLConnection {
             if (sign == null) {
                 continue;
             }
-            String col1 = sign.getDocumentType().getSignField().getDBName();
-            String col2 = sign.getDocumentType().getDateField().getDBName();
+            String col1 = sign.getType().getSignField().getDBName();
+            String col2 = sign.getType().getDateField().getDBName();
             String sql = "INSERT INTO " + TABLE_SIGNATURE + " (" +
                          SignatureField.PATIENT_ID.getDBName() + ", " +
                          col1 + ", " + col2 + ") VALUES (?, ?, ?) " + " ON DUPLICATE KEY UPDATE " +
@@ -518,10 +518,10 @@ public class DBio extends SQLConnection {
 
     static void firstRun_DB(SQLConnection io) {
         System.out.println( io.write( "CREATE DATABASE " + DB + ";" ));
-        System.out.println( io.write( "USE " + DB + ";" ));
     }
 
     static void firstRun_App(SQLConnection io) {
+        System.out.println( io.write( "USE " + DB + ";" ));
         String orte = String.join( " ", Location.ORTE );
         StringBuilder sb = new StringBuilder( "CREATE TABLE IF NOT EXISTS " );
         sb.append( TABLE_APP );
@@ -542,6 +542,7 @@ public class DBio extends SQLConnection {
     }
 
     static void firstRun_Patienten(SQLConnection io) {
+        System.out.println( io.write( "USE " + DB + ";" ));
         StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
         sb.append(TABLE_PATIENT);
         sb.append(" (");
@@ -557,6 +558,7 @@ public class DBio extends SQLConnection {
     }
 
     static void firstRun_Signature(SQLConnection io) {
+        System.out.println( io.write( "USE " + DB + ";" ));
         StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
         sb.append(TABLE_SIGNATURE);
         sb.append(" (");
@@ -572,6 +574,7 @@ public class DBio extends SQLConnection {
     }
 
     static void firstRun_Artikel(SQLConnection io) {
+        System.out.println( io.write( "USE " + DB + ";" ));
         StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
         sb.append(TABLE_ARTIKEL);
         sb.append(" (");

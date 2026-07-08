@@ -126,7 +126,7 @@ public class Patient implements Comparable<Patient>, HasArtikel {
     }
 
     public void setSignature(Signature sign) {
-        signMap.put( sign.getDocumentType(), sign );
+        signMap.put( sign.getType(), sign );
         setModified(true);
     }
 

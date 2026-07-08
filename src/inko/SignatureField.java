@@ -24,9 +24,6 @@ public enum SignatureField {
     SIGN_MEHRKOSTEN("MEHRKOSTEN_Unterschrift", "mediumblob", BufferedImage.class, "⚕sign_mehrkosten⚕"),
     DATE_MEHRKOSTEN("MEHRKOSTEN_Datum", "date", LocalDate.class, "⚕date_mehrkosten⚕");
 
-    public final static String SIGN_STRING = "Unterschrift";
-    public final static String DATE_STRING = "Datum";
-
     private final String dbName;
     private final String dbType;
     private final Class<?> dataType;

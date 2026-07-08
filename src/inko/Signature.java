@@ -42,7 +42,7 @@ public class Signature {
         this.date = date == null ? LocalDate.now() : date.toLocalDate();
     }
 
-    public SignableDocument getDocumentType() {
+    public SignableDocument getType() {
         return documentType;
     }
 

@@ -20,6 +20,8 @@ import java.time.LocalDate;
 
 public class Signature {
 
+    public final static LocalDate NULL = LocalDate.of(1900, 1, 1);
+
     private final SignableDocument documentType;
 
     private BufferedImage sign;
@@ -52,7 +54,7 @@ public class Signature {
 
     public String getBase64HtmlSign() {
         if (sign == null) {
-            return "NULL";
+            return "";
         }
         try {
             return convertToHtmlBase64(sign);
@@ -78,13 +80,24 @@ public class Signature {
     }
 
     public void setDate(LocalDate date) {
-        this.date = date;
-        modified = true;
+        if (date == null) {
+            return;
+        }
+        if ( !date.isEqual( this.date )) {
+            this.date = date;
+            modified = true;
+        }
     }
 
     public void setDate(Date date) {
-        this.date = date.toLocalDate();
-        modified = true;
+        if (date == null) {
+            return;
+        }
+        LocalDate localDate = date.toLocalDate();
+        if ( !localDate.isEqual( this.date )) {
+            this.date = localDate;
+            modified = true;
+        }
     }
 
     public void setSign(BufferedImage sign, LocalDate date) {
@@ -94,7 +107,7 @@ public class Signature {
     }
 
     public LocalDate getDate() {
-        return date == null ? LocalDate.now() : date;
+        return date;
     }
 
     public void setModified(boolean modified) {

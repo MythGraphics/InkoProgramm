@@ -1022,11 +1022,16 @@ public class MainFrame extends JFrame {
     }
 
     private String getSignDateString(SignableDocument doc, String defaultString) {
-        Signature sign = getCurrentPatient().getSignature(doc);
-        if (sign != null) {
-            return "Unterschrift vom " + sign.getDate().format(Patient.DEFAULT_FORMATTER);
+        if ( !getCurrentPatient().hasSignatureData() ) {
+            return defaultString;
         }
-        return defaultString;
+
+        Signature sign = getCurrentPatient().getSignature(doc);
+        if (sign == null) {
+            return defaultString;
+        }
+        
+        return "Unterschrift vom " + sign.getDate().format(Patient.DEFAULT_FORMATTER);
     }
 
     protected void loadEntry(Patient patient) {
